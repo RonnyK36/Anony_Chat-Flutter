@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "891055136311",
+    "project_id": "chit-chat-b4656",
+    "storage_bucket": "chit-chat-b4656.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:891055136311:android:ae0856a825c13f778929b2",
+        "android_client_info": {
+          "package_name": "com.nerdherd.annony_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "891055136311-vkcj9uih36r3a6ah2jff6iapctqcrb78.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDflk3bzAxtPc602IoGGg2Kn8dTJ74QGEk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "891055136311-vkcj9uih36r3a6ah2jff6iapctqcrb78.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
