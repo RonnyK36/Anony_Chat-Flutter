@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../constants.dart';
 
 final _firestore = Firestore.instance;
+FirebaseUser loggedInUser;
 
 class ChatScreen extends StatefulWidget {
   static String id = 'chat_screen';
@@ -14,7 +15,6 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final _auth = FirebaseAuth.instance;
-  FirebaseUser loggedInUser;
   String messageText;
   final messageTextController = TextEditingController();
 
@@ -36,20 +36,6 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  // void getMessages() async {
-  //   final messages = await _firestore.collection('messages').getDocuments();
-  //   for (var message in messages.documents) {
-  //     print(message.data);
-  //   }
-  // }
-  void messagesStream() async {
-    await for (var snapshot in _firestore.collection('messages').snapshots()) {
-      for (var message in snapshot.documents) {
-        print(message.data);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,15 +45,12 @@ class _ChatScreenState extends State<ChatScreen> {
           IconButton(
             icon: Icon(Icons.close),
             onPressed: () {
-              //Implement logout functionality
-              // getMessages();
-              messagesStream();
-              // _auth.signOut();
-              // Navigator.pop(context);
+              _auth.signOut();
+              Navigator.pop(context);
             },
           ),
         ],
-        title: Text('⚡️Chat'),
+        title: Text('Anony-Chat'),
         backgroundColor: Colors.lightBlueAccent,
       ),
       body: SafeArea(
@@ -139,19 +122,24 @@ class MessagesStream extends StatelessWidget {
             ),
           );
         }
-        final messages = snapshot.data.documents;
+        final messages = snapshot.data.documents.reversed;
         List<MessageBubble> messageBubbles = [];
         for (var message in messages) {
           final messageText = message.data['text'];
           final messageSender = message.data['sender'];
+          final currentUser = loggedInUser.email;
+          if (currentUser == messageSender) {}
           final messageBubble = MessageBubble(
             text: messageText,
             sender: messageSender,
+            isMyText: currentUser == messageSender,
           );
+
           messageBubbles.add(messageBubble);
         }
         return Expanded(
           child: ListView(
+            reverse: true,
             padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             children: messageBubbles,
           ),
@@ -164,33 +152,44 @@ class MessagesStream extends StatelessWidget {
 }
 
 class MessageBubble extends StatelessWidget {
-  MessageBubble({this.text, this.sender});
+  MessageBubble({this.text, this.sender, this.isMyText});
 
   final String text;
   final String sender;
+  final bool isMyText;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(10.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment:
+            isMyText ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Text(
             '$sender',
-            style: TextStyle(color: Colors.black45),
+            style:
+                TextStyle(color: isMyText ? Colors.black45 : Colors.blueAccent),
           ),
           Material(
-            color: Colors.blueAccent,
+            color: isMyText ? Colors.blueAccent : Colors.black,
             elevation: 5,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+              topLeft: isMyText ? Radius.circular(20) : Radius.circular(0),
+              topRight: isMyText ? Radius.circular(0) : Radius.circular(20),
+            ),
             child: Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: 10,
-                vertical: 20,
+                vertical: 10,
               ),
               child: Text(
                 '$text',
-                style: TextStyle(fontSize: 20, color: Colors.white),
+                style: TextStyle(
+                    fontSize: 17,
+                    color: isMyText ? Colors.white : Colors.white),
               ),
             ),
           ),
